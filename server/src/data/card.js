@@ -8,8 +8,6 @@ module.exports = class Card {
         this.#weight = weight
     }
 
-
-
     get getCardName() {
         return this.#name;
     }
@@ -28,7 +26,6 @@ module.exports = class Card {
         return {
             name: this.getCardName,
             suit: this.getCardSuit,
-            weight: this.getCardWeight
         }
     }
 }

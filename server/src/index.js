@@ -7,7 +7,7 @@ const PORT = 3300
 const app = new Koa();
 const router = require("./routes/router");
 
-// app.use(serve(path.join(__dirname, '../public/static')));
+app.use(serve(path.join(__dirname, '../public/static')));
 app.use(router.routes());
 
 app.listen(PORT);

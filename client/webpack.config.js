@@ -51,7 +51,7 @@ const config = {
         new CleanWebpackPlugin(),
     ],
     devServer: {
-        port: 4200
+        port: 4300
     }
 };
 

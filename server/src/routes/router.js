@@ -15,13 +15,11 @@ const errorResponse = (ctx, code = 500, message = 'Internal error') => {
     ctx.status = code;
 }
 const successResponse = (ctx, data) => {
-    ctx.body = {
-        data
-    };
+    ctx.body = data;
     ctx.status = 200;
 }
 
-router.get('/players', (ctx, next) => {
+router.get('/game', (ctx, next) => {
     try {
         successResponse(ctx, game);
     } catch (e) {

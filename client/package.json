@@ -42,5 +42,6 @@
   "browserslist": "> 5%, not dead",
   "author": "",
   "license": "ISC",
+  "main": "src/index.js",
   "description": ""
 }
