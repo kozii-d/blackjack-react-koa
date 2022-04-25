@@ -1,0 +1,33 @@
+.player {
+  //display: flex;
+  flex-direction: row;
+  width: 500px;
+  height: 300px;
+  //background-color: #199019;
+  border: 3px solid $player-border;
+  margin-top: 50px;
+  border-radius: 10px;
+  padding: 20px;
+  &_active {
+    border: 3px solid $player-border-active;
+  }
+  &_lose {
+    border: 3px solid $player-border-lose;
+
+  }
+  &__info {
+    font-size: $player-font-size;
+    color: $player-font-color;
+    display: flex;
+    justify-content: space-between;
+  }
+  &__name {
+    margin: 0;
+    font-weight: bold;
+
+  }
+  &__score {
+    margin: 0;
+    font-weight: bold;
+  }
+}

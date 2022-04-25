@@ -1,0 +1,35 @@
+.game-menu {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: $game-menu-width;
+  height: 100%;
+  background-color: $game-menu-bg-color;
+  border-left: 10px solid $game-menu-border-color;
+  &__card {
+    height: 300px;
+    width: 200px;
+    border-radius: 15px;
+    background-color: #666666;
+    margin-top: 30px;
+  }
+  &__btn {
+    border: 2px solid black;
+    height: 80px;
+    width: 200px;
+    border-radius: 15px;
+    margin-top: 30px;
+    text-transform: uppercase;
+    cursor: pointer;
+    font-size: 30px;
+    font-weight: bold;
+    background-color: $game-menu-btn-color;
+    &:hover {
+      background-color: darken($game-menu-btn-color, 10%);
+      //box-shadow: 5px 5px 15px 1px #000000;
+    }
+  }
+}
