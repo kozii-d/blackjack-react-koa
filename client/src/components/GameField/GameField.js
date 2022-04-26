@@ -1,6 +1,7 @@
 import React, {useEffect, useMemo} from 'react';
 import Player from "../Player/Player";
 import axios from "axios";
+import LoadingSpinner from "../LoadingSpinner/LoadingSpinner";
 
 const GameField = ({gameState, updateGame}) => {
 
@@ -38,7 +39,7 @@ const GameField = ({gameState, updateGame}) => {
 
     return (
         <main className="game-field">
-            {players}
+            {players ? players : <LoadingSpinner/>}
         </main>
     );
 };
