@@ -13,6 +13,7 @@ const GameField = ({gameState, updateGame}) => {
     }
 
     useEffect(() => {
+        // updateGame()
         getGameAndUpdateState();
     }, []);
 
