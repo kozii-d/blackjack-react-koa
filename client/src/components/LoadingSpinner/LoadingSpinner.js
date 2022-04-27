@@ -1,8 +1,8 @@
 import React from 'react';
 
-const LoadingSpinner = () => {
+const LoadingSpinner = ({diplay}) => {
     return (
-        <div className="lds-ring__wrapper">
+        <div className="lds-ring__wrapper" style={diplay}>
             <div className="lds-ring">
                 <div></div>
                 <div></div>

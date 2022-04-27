@@ -29,9 +29,12 @@ const GameField = ({gameState, getGameState}) => {
         return playersArray;
     }, [gameState])
 
+    const spinnerView = useMemo(() => players ? {display: 'none'} : {display: 'flex'}, [players]);
+
     return (
         <main className="game-field">
-            {players ? players : <LoadingSpinner/>}
+            <LoadingSpinner diplay={spinnerView}/>
+            {players}
         </main>
     );
 };

@@ -8,13 +8,13 @@ const handleUpdateGameState = (state, {payload}) => {
 }
 
 export default handleActions({
-    [getGameState]: handleUpdateGameState,
+    // [getGameState]: handleUpdateGameState,
     [getGameState.success]: handleUpdateGameState,
-    [hit]: handleUpdateGameState,
+    // [hit]: handleUpdateGameState,
     [hit.success]: handleUpdateGameState,
-    [stand]: handleUpdateGameState,
+    // [stand]: handleUpdateGameState,
     [stand.success]: handleUpdateGameState,
-    [restart]: handleUpdateGameState,
+    // [restart]: handleUpdateGameState,
     [restart.success]: handleUpdateGameState,
 
 
