@@ -1,20 +1,6 @@
 import React from 'react';
-import axios from "axios";
-const GameMenu = ({updateGame}) => {
 
-    const hit = () => {
-        axios.post('/hit')
-            .then(response => {
-                updateGame(response.data)
-            })
-    }
-
-    const stand = () => {
-        axios.post('/stand')
-            .then(response => {
-                updateGame(response.data)
-            })
-    }
+const GameMenu = ({hit, stand}) => {
 
     return (
         <aside className="game-menu">

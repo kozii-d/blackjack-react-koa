@@ -1,14 +1,6 @@
 import React, {useMemo} from 'react';
-import axios from "axios";
 
-const Modal = ({gameState, updateGame}) => {
-
-    const restart = () => {
-        axios.post('/restart')
-            .then(response => {
-                updateGame(response.data)
-            });
-    }
+const Modal = ({gameState, restart}) => {
 
     const winnerText = useMemo(() => {
         if (!gameState) {

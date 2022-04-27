@@ -3,10 +3,11 @@ import {createStructuredSelector} from "reselect";
 
 import GameMenu from "./GameMenu";
 import {gameState} from "../../store/game/selectors";
-import {updateGame} from "../../store/game/actions";
+import {hit, stand} from "../../store/game/actions";
 
 const mapDispatchToProps = {
-    updateGame
+    hit,
+    stand
 }
 
 const mapStateToProps = createStructuredSelector({

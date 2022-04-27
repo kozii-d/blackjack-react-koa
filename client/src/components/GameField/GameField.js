@@ -1,20 +1,11 @@
 import React, {useEffect, useMemo} from 'react';
 import Player from "../Player/Player";
-import axios from "axios";
 import LoadingSpinner from "../LoadingSpinner/LoadingSpinner";
 
-const GameField = ({gameState, updateGame}) => {
-
-    const getGameAndUpdateState = () => {
-        axios.get('/game')
-            .then(response => {
-                updateGame(response.data)
-            });
-    }
+const GameField = ({gameState, getGameState}) => {
 
     useEffect(() => {
-        // updateGame()
-        getGameAndUpdateState();
+        getGameState()
     }, []);
 
     const players = useMemo(() => {

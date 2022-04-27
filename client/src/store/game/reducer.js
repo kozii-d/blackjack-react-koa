@@ -1,14 +1,21 @@
 import {handleActions} from "redux-actions";
-import {updateGame} from "./actions";
+import {getGameState, hit, stand, restart} from "./actions";
 
 const defaultState = null;
 
 const handleUpdateGameState = (state, {payload}) => {
-    console.log(payload)
-    return payload;
+    return payload.data;
 }
 
 export default handleActions({
-    [updateGame]: handleUpdateGameState,
-    [updateGame + '_SUCCESS']: handleUpdateGameState
+    [getGameState]: handleUpdateGameState,
+    [getGameState.success]: handleUpdateGameState,
+    [hit]: handleUpdateGameState,
+    [hit.success]: handleUpdateGameState,
+    [stand]: handleUpdateGameState,
+    [stand.success]: handleUpdateGameState,
+    [restart]: handleUpdateGameState,
+    [restart.success]: handleUpdateGameState,
+
+
 }, defaultState);

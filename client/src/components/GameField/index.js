@@ -3,10 +3,10 @@ import {createStructuredSelector} from "reselect";
 
 import GameField from "./GameField";
 import {gameState} from "../../store/game/selectors";
-import {updateGame} from "../../store/game/actions";
+import {getGameState} from "../../store/game/actions";
 
 const mapDispatchToProps = {
-    updateGame
+    getGameState
 }
 
 const mapStateToProps = createStructuredSelector({

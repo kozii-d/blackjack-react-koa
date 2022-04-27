@@ -3,10 +3,10 @@ import {createStructuredSelector} from "reselect";
 
 import Modal from "./Modal";
 import {gameState} from "../../store/game/selectors";
-import {updateGame} from "../../store/game/actions";
+import {restart} from "../../store/game/actions";
 
 const mapDispatchToProps = {
-    updateGame
+    restart
 }
 
 const mapStateToProps = createStructuredSelector({
