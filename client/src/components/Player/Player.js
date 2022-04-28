@@ -1,7 +1,7 @@
 import React, {useMemo} from 'react';
 import PlayerCard from "../PlayerCard/PlayerCard";
 
-const Player = ({id, acitvePlayerId, name, score, cardsState, isLose}) => {
+const Player = ({active, name, score, cardsState, isLose}) => {
 
     const cards = useMemo(() => {
         const cardsArray = [];
@@ -14,9 +14,8 @@ const Player = ({id, acitvePlayerId, name, score, cardsState, isLose}) => {
         }
         return cardsArray;
     },[cardsState]);
-    const isActive = useMemo(() => acitvePlayerId === id,[acitvePlayerId]);
-    const playerActiveClasses = useMemo(() => isActive ? 'player player_active' : 'player', [acitvePlayerId]);
-    const playerClasses = useMemo(() => isLose ? 'player player_lose' : playerActiveClasses, [acitvePlayerId]);
+    const playerActiveClasses = useMemo(() => active ? 'player player_active' : 'player', [active, isLose]);
+    const playerClasses = useMemo(() => isLose ? 'player player_lose' : playerActiveClasses, [active, isLose]);
 
     return (
         <div className={playerClasses}>
