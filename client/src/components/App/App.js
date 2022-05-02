@@ -1,17 +1,43 @@
-import React, {Fragment} from 'react';
+import React, {Fragment, useEffect} from 'react';
+import {useNavigate, Route, Routes} from "react-router-dom";
 
 import GameField from "../GameField";
 import GameMenu from "../GameMenu";
 import Modal from "../Modal";
+import LoginPage from "../LoginPage";
 
-const App = () => {
+const App = ({token}) => {
+
+    let navigate = useNavigate();
+    useEffect(() => {
+        if (token) {
+            navigate('/game');
+        } else {
+            navigate('/login');
+        }
+    }, [token])
 
     return (
         <Fragment>
-            <GameField/>
-            <GameMenu/>
-            <Modal/>
+            <Routes>
+                <Route path="/" element={
+                    <Fragment>
+                        <GameField/>
+                        <GameMenu/>
+                        <Modal/>
+                    </Fragment>
+                }/>
+                <Route path="/game" element={
+                    <Fragment>
+                        <GameField/>
+                        <GameMenu/>
+                        <Modal/>
+                    </Fragment>
+                }/>
+                <Route path="/login" element={<LoginPage/>}/>
+            </Routes>
         </Fragment>
+
     )
 }
 

@@ -1,62 +1,131 @@
 const Router = require("@koa/router");
+const koaBody = require('koa-body');
+const {Validator} = require('node-input-validator');
+const {v4: uuidv4} = require('uuid');
+const jwt = require("jsonwebtoken");
+const fs = require('fs');
+const path = require("path");
 
 const Game = require("../data/game");
+const Player = require("../data/player");
 const router = new Router();
-const data = require('../data/index');
 
-let game = data.game;
-const players = data.players;
+const SECRET_KEY = 'OCHEN_SECRETNO';
 
+let games = {};
 
-const errorResponse = (ctx, code = 500, message = 'Internal error') => {
-    ctx.body = {
-        message
+// Middlewares
+const authorizationMiddleware = (ctx, next) => {
+    const token = ctx.header['authorization']
+
+    if (!token) {
+        ctx.status = 401;
+
+        return;
+    }
+
+    let session = null;
+
+    try {
+        session = jwt.verify(token, SECRET_KEY);
+    } catch (e) {
+        ctx.status = 401;
+        ctx.body = {error: e}
+    }
+
+    if (!session) {
+        ctx.status = 401;
+
+        return;
+    }
+
+    ctx.state.session = session;
+
+    return next();
+}
+
+const checkGame = (ctx, next) => {
+    const session = ctx.state.session
+    if (!games[session.id]) {
+        ctx.status = 401;
+
+        return;
+    }
+
+    ctx.state.game = games[session.id];
+
+    return next();
+}
+
+// Controllers
+const getGameController = (ctx) => {
+    ctx.body = ctx.state.game;
+}
+
+const hitAndGetGameController = (ctx) => {
+    ctx.state.game.hit(ctx.state.game.acitvePlayerId);
+    ctx.body = ctx.state.game;
+}
+
+const standAndGetGameController = (ctx) => {
+    ctx.state.game.stand(ctx.state.game.acitvePlayerId);
+    ctx.body = ctx.state.game;
+}
+
+const restartAndGetGameController = (ctx) => {
+    const players = ctx.state.game.players
+    for (const player of players) {
+        player.resertPlayer();
+    }
+    const session = ctx.state.session
+    ctx.state.game = new Game(players);
+    games[session.id] = ctx.state.game;
+
+    ctx.body = ctx.state.game;
+}
+
+const loginController = async (ctx) => {
+    const players = ctx.request.body // массив с именами игроков
+    const v = new Validator({
+        names: players
+    }, {
+        'names': 'required|array',
+        'names.*': 'required|string'
+    });
+
+    const matched = await v.check();
+
+    if (!matched) {
+        ctx.status = 422;
+        console.log('huynya')
+        return;
+    }
+
+    const session = {
+        id: uuidv4()
     };
-    ctx.status = code;
+    const token = jwt.sign(session, SECRET_KEY);
+    const game = new Game(players.map(name => new Player(uuidv4(), name)));
+
+    games[session.id] = game;
+
+    ctx.body = {
+        game,
+        token
+    }
 }
-const successResponse = (ctx, data) => {
-    ctx.body = data;
-    ctx.status = 200;
+
+const getStaticFilesController = (ctx) => {
+    ctx.type = 'html';
+    ctx.body = fs.createReadStream(path.join(__dirname, '../../public/static/index.html'));
 }
 
-router.get('/game', (ctx, next) => {
-    try {
-        successResponse(ctx, game);
-    } catch (e) {
-        errorResponse(ctx, 500, e.message)
-    }
-});
+router.post('/api/login', koaBody(), loginController);
+router.get('/api/game', authorizationMiddleware, checkGame, getGameController);
+router.post('/api/hit', authorizationMiddleware, checkGame, hitAndGetGameController);
+router.post('/api/stand', authorizationMiddleware, checkGame, standAndGetGameController);
+router.post('/api/restart', authorizationMiddleware, checkGame, restartAndGetGameController);
 
-router.post('/hit', (ctx, next) => {
-    try {
-        game.hit(game.acitvePlayerId);
-        successResponse(ctx, game);
-    } catch (e) {
-        errorResponse(ctx, 500, e.message)
-    }
-})
-
-router.post('/stand', (ctx, next) => {
-    try {
-        game.stand(game.acitvePlayerId);
-        successResponse(ctx, game);
-    } catch (e) {
-        errorResponse(ctx, 500, e.message)
-    }
-})
-
-router.post('/restart', (ctx, next) => {
-
-    try {
-        for (const player of players) {
-            player.resertPlayer();
-        }
-        game = new Game(players);
-
-        successResponse(ctx, game);
-    } catch (e) {
-        errorResponse(ctx, 500, e.message)
-    }
-})
+router.get('/:url', getStaticFilesController)
 
 module.exports = router;

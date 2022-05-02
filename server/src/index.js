@@ -3,7 +3,7 @@ const path = require('path');
 const Koa = require('koa');
 const serve = require('koa-static');
 
-const PORT = 3300
+const PORT = 3000
 const app = new Koa();
 const router = require("./routes/router");
 
