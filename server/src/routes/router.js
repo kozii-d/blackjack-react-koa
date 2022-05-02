@@ -1,6 +1,7 @@
 const Router = require("@koa/router");
 const koaBody = require('koa-body');
-const { v4: uuidv4 } = require('uuid');
+const {Validator} = require('node-input-validator');
+const {v4: uuidv4} = require('uuid');
 const jwt = require("jsonwebtoken");
 const fs = require('fs');
 const path = require("path");
@@ -13,6 +14,7 @@ const SECRET_KEY = 'OCHEN_SECRETNO';
 
 let games = {};
 
+// Middlewares
 const authorizationMiddleware = (ctx, next) => {
     const token = ctx.header['authorization']
 
@@ -47,7 +49,7 @@ const checkGame = (ctx, next) => {
     if (!games[session.id]) {
         ctx.status = 401;
 
-        return ;
+        return;
     }
 
     ctx.state.game = games[session.id];
@@ -55,6 +57,7 @@ const checkGame = (ctx, next) => {
     return next();
 }
 
+// Controllers
 const getGameController = (ctx) => {
     ctx.body = ctx.state.game;
 }
@@ -81,11 +84,22 @@ const restartAndGetGameController = (ctx) => {
     ctx.body = ctx.state.game;
 }
 
-router.post('/api/login', koaBody(), (ctx) => {
+const loginController = async (ctx) => {
     const players = ctx.request.body // массив с именами игроков
-    // const players = ['Alice' , 'Joe', 'Hugh']
-    // todo: валидировать входящие данные. Массив ли это? Массив ли это строк? Не пустой ли массив? node-input-validator
-    // ctx.status = 422; // вернуть в случае некоретных данных
+    const v = new Validator({
+        names: players
+    }, {
+        'names': 'required|array',
+        'names.*': 'required|string'
+    });
+
+    const matched = await v.check();
+
+    if (!matched) {
+        ctx.status = 422;
+        console.log('huynya')
+        return;
+    }
 
     const session = {
         id: uuidv4()
@@ -99,69 +113,19 @@ router.post('/api/login', koaBody(), (ctx) => {
         game,
         token
     }
-});
-
-
-const errorResponse = (ctx, code = 500, message = 'Internal error') => {
-    ctx.body = {
-        message
-    };
-    ctx.status = code;
-}
-const successResponse = (ctx, data) => {
-    ctx.body = data;
-    ctx.status = 200;
 }
 
+const getStaticFilesController = (ctx) => {
+    ctx.type = 'html';
+    ctx.body = fs.createReadStream(path.join(__dirname, '../../public/static/index.html'));
+}
+
+router.post('/api/login', koaBody(), loginController);
 router.get('/api/game', authorizationMiddleware, checkGame, getGameController);
 router.post('/api/hit', authorizationMiddleware, checkGame, hitAndGetGameController);
 router.post('/api/stand', authorizationMiddleware, checkGame, standAndGetGameController);
 router.post('/api/restart', authorizationMiddleware, checkGame, restartAndGetGameController);
 
-router.get('/:url', (ctx) => {
-    ctx.type = 'html';
-    ctx.body = fs.createReadStream(path.join(__dirname, '../../public/static/index.html'));
-})
-
-// router.get('/api/game', (ctx) => {
-//     try {
-//         successResponse(ctx, game);
-//     } catch (e) {
-//         errorResponse(ctx, 500, e.message)
-//     }
-// });
-
-
-// router.post('/api/hit', (ctx) => {
-//     try {
-//         game.hit(game.acitvePlayerId);
-//         successResponse(ctx, game);
-//     } catch (e) {
-//         errorResponse(ctx, 500, e.message)
-//     }
-// })
-//
-// router.post('/api/stand', (ctx) => {
-//     try {
-//         game.stand(game.acitvePlayerId);
-//         successResponse(ctx, game);
-//     } catch (e) {
-//         errorResponse(ctx, 500, e.message)
-//     }
-// })
-//
-// router.post('/api/restart', (ctx) => {
-//
-//     try {
-//         for (const player of players) {
-//             player.resertPlayer();
-//         }
-//         game = new Game(players);
-//
-//         successResponse(ctx, game);
-//     } catch (e) {
-//         errorResponse(ctx, 500, e.message)
-//     }
-// })
+router.get('/:url', getStaticFilesController)
 
 module.exports = router;

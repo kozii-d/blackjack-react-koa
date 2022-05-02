@@ -1,17 +1,17 @@
 import React, {useState} from 'react';
+import { v4 as uuidv4 } from 'uuid';
 
 const LoginPage = ({getToken}) => {
 
     const [formValue, setFormValue] = useState({});
-    const [inputs, setInputs] = useState([true, true]);
+    const [inputs, setInputs] = useState([uuidv4(), uuidv4()]);
 
     const handleAddInput = () => {
-        setInputs([...inputs, true]);
+        setInputs([...inputs, uuidv4()]);
     }
 
-    //todo: исправить костыль
-    const handleDeleteInput = () => {
-        setInputs(inputs.slice(0, inputs.length - 1));
+    const handleDeleteInput = (e) => {
+        setInputs(inputs.filter(id => id !== e.target.parentNode.id));
     }
 
     const handleSubmit = (e) => {
@@ -25,19 +25,20 @@ const LoginPage = ({getToken}) => {
 
     return (
         <div className='login'>
+            <h2 className='login__title'>create players</h2>
             <form className='login__form' onSubmit={handleSubmit}>
-                {inputs.map((item, index) => (
-                    <div className='login__item' key={index}>
-                        <input className='login__input' id={index} required type='text' name={`player${index}`} onChange={handleChange} />
+                {inputs.map((item) => (
+                    <div className='login__item' key={item} id={item}>
+                        <input className='login__input' required type='text' name={`name${item}`} onChange={handleChange} />
                         {
                             inputs.length <= 2
                             ? null
-                            : <button className='login__btn-close' type='button' onClick={handleDeleteInput}>x</button>
+                            : <button className='login__btn-close' type='button' onClick={handleDeleteInput}>✖</button>
                         }
                     </div>
                 ))}
-                <button className='login__btn-form login__btn-form_close' type='button' onClick={handleAddInput}>add</button>
-                <button className='login__btn-form login__btn-form_send' type='submit'>send</button>
+                <button className='login__btn-form login__btn-form_close' type='button' onClick={handleAddInput}>add player</button>
+                <button className='login__btn-form login__btn-form_send' type='submit'>start game</button>
             </form>
         </div>
     );

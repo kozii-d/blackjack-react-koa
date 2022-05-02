@@ -7,6 +7,7 @@ import Modal from "../Modal";
 import LoginPage from "../LoginPage";
 
 const App = ({token}) => {
+
     let navigate = useNavigate();
     useEffect(() => {
         if (token) {
@@ -25,15 +26,15 @@ const App = ({token}) => {
                         <GameMenu/>
                         <Modal/>
                     </Fragment>
-                } />
+                }/>
                 <Route path="/game" element={
                     <Fragment>
                         <GameField/>
                         <GameMenu/>
                         <Modal/>
                     </Fragment>
-                } />
-                <Route path="/login" element={<LoginPage/>} />
+                }/>
+                <Route path="/login" element={<LoginPage/>}/>
             </Routes>
         </Fragment>
 

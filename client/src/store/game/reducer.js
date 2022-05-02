@@ -28,14 +28,14 @@ const handleErrorUpdateToken = (state) => {
 export default handleActions({
     [getToken.success]: handleUpdateToken,
     [getToken.fail]: handleErrorUpdateToken,
-    // [getGameState]: handleUpdateGameState,
+
     [getGameState.success]: handleUpdateGameState,
     [getGameState.fail]: handleErrorUpdateGameState,
-    // [hit]: handleUpdateGameState,
+
     [hit.success]: handleUpdateGameState,
-    // [stand]: handleUpdateGameState,
+
     [stand.success]: handleUpdateGameState,
-    // [restart]: handleUpdateGameState,
+
     [restart.success]: handleUpdateGameState,
 
 
