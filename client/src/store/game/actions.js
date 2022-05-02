@@ -7,16 +7,30 @@ const createRequestAction = (type, payloadCreator) => {
     return action;
 }
 
+export const getToken = createRequestAction('GET_TOKEN', (data) => ({
+    request: {
+        method: 'post',
+        url: '/api/login',
+        data
+    }
+}))
+
 export const getGameState = createRequestAction('GET_GAME', () => ({
     request: {
-        url: '/game'
+        url: '/api/game',
+        headers: {
+            Authorization: localStorage.getItem('token')
+        }
     }
 }));
 
 export const hit = createRequestAction('HIT', () => ({
     request: {
         method: 'post',
-        url: '/hit'
+        url: '/api/hit',
+        headers: {
+            Authorization: localStorage.getItem('token')
+        }
     }
 }));
 
@@ -24,7 +38,10 @@ export const hit = createRequestAction('HIT', () => ({
 export const stand = createRequestAction('STAND', () => ({
     request: {
         method: 'post',
-        url: '/stand'
+        url: '/api/stand',
+        headers: {
+            Authorization: localStorage.getItem('token')
+        }
     }
 }));
 
@@ -32,7 +49,10 @@ export const stand = createRequestAction('STAND', () => ({
 export const restart = createRequestAction('RESTART', () => ({
     request: {
         method: 'post',
-        url: '/restart'
+        url: '/api/restart',
+        headers: {
+            Authorization: localStorage.getItem('token')
+        }
     }
 }));
 

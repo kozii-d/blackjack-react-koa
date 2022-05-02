@@ -1,6 +1,8 @@
 const Player = require("./player");
 const Game = require("./game");
-const players = [new Player(0, 'Alice'), new Player(1, 'Joe'), new Player(2, 'Hugh')];
+const { v4: uuidv4 } = require('uuid');
+
+const players = [new Player(uuidv4(), 'Alice'), new Player(uuidv4(), 'Joe'), new Player(uuidv4(), 'Hugh')];
 let game = new Game(players);
 
 module.exports = {
