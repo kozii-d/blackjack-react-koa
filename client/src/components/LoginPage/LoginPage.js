@@ -1,37 +1,35 @@
 import React, {useState} from 'react';
-import { v4 as uuidv4 } from 'uuid';
 
 const LoginPage = ({getToken}) => {
 
-    const [formValue, setFormValue] = useState({});
-    const [inputs, setInputs] = useState([uuidv4(), uuidv4()]);
+    const [formValue, setFormValue] = useState(['', '']);
 
     const handleAddInput = () => {
-        setInputs([...inputs, uuidv4()]);
+        setFormValue([...formValue, '']);
     }
 
     const handleDeleteInput = (e) => {
-        setInputs(inputs.filter(id => id !== e.target.parentNode.id));
+        setFormValue(formValue.filter((input, index) => index !== +e.target.parentNode.id));
     }
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        getToken(Object.values(formValue));
+        getToken(formValue);
     }
 
     const handleChange = (e) => {
-        setFormValue({...formValue, [e.target.name]: e.target.value});
+        setFormValue(formValue.map((item, index) => +e.target.parentNode.id === index ? e.target.value : item));
     }
 
     return (
         <div className='login'>
             <h2 className='login__title'>create players</h2>
             <form className='login__form' onSubmit={handleSubmit}>
-                {inputs.map((item) => (
-                    <div className='login__item' key={item} id={item}>
-                        <input className='login__input' required type='text' name={`name${item}`} onChange={handleChange} />
+                {formValue.map((item, index) => (
+                    <div className='login__item' key={index} id={index}>
+                        <input className='login__input' required type='text' name={`name${index}`} value={formValue[index]} onChange={handleChange} />
                         {
-                            inputs.length <= 2
+                            formValue.length <= 2
                             ? null
                             : <button className='login__btn-close' type='button' onClick={handleDeleteInput}>✖</button>
                         }
