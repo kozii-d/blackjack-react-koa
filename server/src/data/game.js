@@ -86,8 +86,8 @@ module.exports = class Game {
         this.checkEndGame();
     }
 
-    hit(playerId) {
-        const player = this.players.find(elem => elem.getPlayerId === playerId);
+    hit() {
+        const player = this.players.find(elem => elem.getPlayerId === this.acitvePlayerId);
                 player.cards.push(this.#cardsDeck.shift());
                 player.updatePlayer();
                 if (player.getPlayerScore === 21) {
@@ -101,8 +101,8 @@ module.exports = class Game {
         this.checkEndGame();
     }
 
-    stand(playerId) {
-        const player = this.players.find(elem => elem.getPlayerId === playerId);
+    stand() {
+        const player = this.players.find(elem => elem.getPlayerId === this.acitvePlayerId);
         player.isStand = true;
         player.updatePlayer();
         this.moveWinner(player);

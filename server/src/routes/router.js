@@ -31,10 +31,6 @@ const authorizationMiddleware = (ctx, next) => {
     } catch (e) {
         ctx.status = 401;
         ctx.body = {error: e}
-    }
-
-    if (!session) {
-        ctx.status = 401;
 
         return;
     }
@@ -63,12 +59,12 @@ const getGameController = (ctx) => {
 }
 
 const hitAndGetGameController = (ctx) => {
-    ctx.state.game.hit(ctx.state.game.acitvePlayerId);
+    ctx.state.game.hit();
     ctx.body = ctx.state.game;
 }
 
 const standAndGetGameController = (ctx) => {
-    ctx.state.game.stand(ctx.state.game.acitvePlayerId);
+    ctx.state.game.stand();
     ctx.body = ctx.state.game;
 }
 
@@ -97,7 +93,7 @@ const loginController = async (ctx) => {
 
     if (!matched) {
         ctx.status = 422;
-        console.log('huynya')
+
         return;
     }
 
