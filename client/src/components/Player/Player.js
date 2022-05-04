@@ -1,5 +1,6 @@
 import React, {useMemo} from 'react';
 import PlayerCard from "../PlayerCard/PlayerCard";
+const classNames = require('classnames');
 
 const Player = ({active, name, score, cardsState, isLose}) => {
 
@@ -14,11 +15,9 @@ const Player = ({active, name, score, cardsState, isLose}) => {
         }
         return cardsArray;
     },[cardsState]);
-    const playerActiveClasses = useMemo(() => active ? 'player player_active' : 'player', [active, isLose]);
-    const playerClasses = useMemo(() => isLose ? 'player player_lose' : playerActiveClasses, [active, isLose]);
 
     return (
-        <div className={playerClasses}>
+        <div className={classNames('player', {player_active: active, player_lose: isLose})}>
             <div className="player__info">
                 <p className="player__name">{name}</p>
                 <p className="player__score">{score}</p>
