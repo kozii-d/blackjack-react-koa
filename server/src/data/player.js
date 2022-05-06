@@ -30,7 +30,7 @@ module.exports = class Player {
         this.checkWin();
     }
 
-    resertPlayer() {
+    resetPlayer() {
         this.cards = [];
         this.#score = 0;
         this.isLose = false;
@@ -44,7 +44,6 @@ module.exports = class Player {
             }
         })
         this.setScore();
-
     }
 
     checkWin() {

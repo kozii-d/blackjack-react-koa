@@ -1,6 +1,7 @@
 const Router = require("@koa/router");
 const koaBody = require('koa-body');
 const {Validator} = require('node-input-validator');
+const mongoose = require('mongoose');
 const {v4: uuidv4} = require('uuid');
 const jwt = require("jsonwebtoken");
 const fs = require('fs');
@@ -11,6 +12,16 @@ const Player = require("../data/player");
 const router = new Router();
 
 const SECRET_KEY = 'OCHEN_SECRETNO';
+
+// mongoose.connect('mongodb://localhost:27017/blackjack').then(async () => {
+//     console.log('start');
+//     const User = mongoose.model('User', {
+//         name: String,
+//         age: Number
+//     });
+//
+//     const Dima = new User({name: 'Dmitrii', age: 22});
+// });
 
 let games = {};
 
@@ -71,7 +82,7 @@ const standAndGetGameController = (ctx) => {
 const restartAndGetGameController = (ctx) => {
     const players = ctx.state.game.players
     for (const player of players) {
-        player.resertPlayer();
+        player.resetPlayer();
     }
     const session = ctx.state.session
     ctx.state.game = new Game(players);

@@ -1,4 +1,5 @@
 const Card = require('./card')
+const mongoose = require("mongoose");
 
 module.exports = class Game {
     #cardsDeck = [];
@@ -53,9 +54,9 @@ module.exports = class Game {
     }
 
     moveWinner(player) {
-       if (player.isStand && !player.isLose) {
-           this.winners.push(player);
-       }
+        if (player.isStand && !player.isLose) {
+            this.winners.push(player);
+        }
     }
 
     defineWinner() {
@@ -88,15 +89,15 @@ module.exports = class Game {
 
     hit() {
         const player = this.players.find(elem => elem.getPlayerId === this.acitvePlayerId);
-                player.cards.push(this.#cardsDeck.shift());
-                player.updatePlayer();
-                if (player.getPlayerScore === 21) {
-                    this.stand(this.acitvePlayerId);
-                }
-                if (player.getPlayerScore > 21) {
-                    this.#arrayOfPlayerId.splice(this.#arrayOfPlayerId.indexOf(player.getPlayerId), 1);
-                    this.setNextPlayerId();
-                }
+        player.cards.push(this.#cardsDeck.shift());
+        player.updatePlayer();
+        if (player.getPlayerScore === 21) {
+            this.stand(this.acitvePlayerId);
+        }
+        if (player.getPlayerScore > 21) {
+            this.#arrayOfPlayerId.splice(this.#arrayOfPlayerId.indexOf(player.getPlayerId), 1);
+            this.setNextPlayerId();
+        }
         this.defineWinner();
         this.checkEndGame();
     }
@@ -114,3 +115,139 @@ module.exports = class Game {
 
 
 }
+
+mongoose.connect('mongodb://localhost:27017/blackjack').then(async () => {
+    console.log('start');
+
+    const cardSchema = new mongoose.Schema({
+        name: String,
+        suit: String,
+        weight: Number
+    });
+
+    cardSchema.methods = {
+        getCardName: function () {
+            return this.name;
+        },
+        getCardSuit: function () {
+            return this.suit;
+        },
+        getCardWeight: function () {
+            return this.weight;
+        },
+        setCardWeight: function (weight) {
+            this.weight = weight;
+            this.parent().parent().save();
+        }
+    }
+
+    const Card = mongoose.model('Card', cardSchema);
+
+    const playerSchema = new mongoose.Schema({
+        score: Number,
+        name: String,
+        cards: [cardSchema],
+        isLose: Boolean,
+        isStand: Boolean
+    });
+
+
+    playerSchema.methods = {
+        resetPlayer: function () {
+            this.cards = [];
+            this.score = 0;
+            this.isLose = false;
+            this.isStand = false;
+            this.parent().save();
+        },
+        setScore: function () {
+            this.score = this.cards.reduce((accumulator, currentValue) => {
+                return accumulator + currentValue.getCardWeight();
+            }, 0);
+            this.parent().save();
+        },
+        getPlayerScore: function () {
+            return this.score;
+        },
+        getPlayerName: function () {
+            return this.name;
+        },
+        // getPlayerId: function () {
+        //     return this.id;
+        // }
+        checkWin: function () {
+            if (this.score === 21) {
+                this.isStand = true;
+            }
+            if (this.score > 21) {
+                this.isLose = true;
+                this.isStand = true;
+            }
+            this.parent().save();
+        },
+        checkAce: async function () {
+            // if (this.score > 21) {
+                console.log(1)
+                await this.cards.find((card) => card.getCardName() === 'A').setCardWeight(1);
+                // await this.setScore();
+            // }
+        },
+        updatePlayer: async function () {
+            await this.setScore();
+            await this.checkAce();
+            await this.checkWin();
+        }
+
+    }
+
+    const Player = mongoose.model('Player', playerSchema);
+
+    const gameSchema = new mongoose.Schema({
+        cardsDeck: Array,
+        players: [playerSchema],
+        winners: Array,
+        idIndex: Number,
+        arrayOfPlayerId: Array,
+        // acitvePlayerId: ObjectId,
+        isEndGame: Boolean
+    });
+
+    gameSchema.methods.test = function () {
+        this.idIndex = this.idIndex * 33;
+        this.save();
+        console.log(this.idIndex);
+    }
+
+    const Game = mongoose.model('Game', gameSchema);
+
+    const game = new Game({
+        cardsDeck: [1, 2],
+        players: [new Player({
+            score: 1,
+            name: 'abc',
+            cards: [new Card({
+                name: 'Q',
+                suit: 'Q',
+                weight: 10
+            }), new Card({
+                name: 'A',
+                suit: 'A',
+                weight: 12
+            })],
+            isLose: true,
+            isStand: true
+        })],
+        winners: [],
+        idIndex: 11,
+        arrayOfPlayerId: [1, 2],
+        // acitvePlayerId: ObjectId,
+        isEndGame: false
+    });
+
+    // await game.save();
+
+    const g = await Game.findOne({});
+    // await g.players[0].cards[1].setCardWeight(12)
+    await g.players[0].checkAce();
+
+});
