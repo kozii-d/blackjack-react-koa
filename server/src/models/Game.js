@@ -77,7 +77,7 @@ const cardSchema = new mongoose.Schema({
     const gameSchema = new mongoose.Schema({
         cardsDeck: [cardSchema],
         players: [playerSchema],
-        winners: Array,
+        winners: [playerSchema],
         idIndex: Number,
         arrayOfPlayerId: Array,
         acitvePlayerId: String,

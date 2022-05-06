@@ -5,7 +5,7 @@ import LoadingSpinner from "../LoadingSpinner/LoadingSpinner";
 const GameField = ({gameState, getGameState}) => {
 
     useEffect(() => {
-        getGameState()
+        getGameState();
     }, []);
 
 
@@ -14,12 +14,12 @@ const GameField = ({gameState, getGameState}) => {
             <LoadingSpinner visible={!gameState}/>
             {gameState && gameState.players.map((player) => (
                 <Player
-                    key={player.id}
+                    key={player._id}
                     cardsState={player.cards}
                     name={player.name}
                     score={player.score}
                     isLose={player.isLose}
-                    active={gameState.acitvePlayerId === player.id}
+                    active={gameState.acitvePlayerId === player._id}
                 />
             ))}
         </main>
