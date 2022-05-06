@@ -1,29 +1,57 @@
 const Router = require("@koa/router");
 const koaBody = require('koa-body');
 const {Validator} = require('node-input-validator');
-const mongoose = require('mongoose');
 const {v4: uuidv4} = require('uuid');
 const jwt = require("jsonwebtoken");
 const fs = require('fs');
 const path = require("path");
 
-const Game = require("../data/game");
+// const Game = require("../data/game");
+const Game = require("../models/Game");
 const Player = require("../data/player");
 const router = new Router();
 
 const SECRET_KEY = 'OCHEN_SECRETNO';
 
-// mongoose.connect('mongodb://localhost:27017/blackjack').then(async () => {
-//     console.log('start');
-//     const User = mongoose.model('User', {
-//         name: String,
-//         age: Number
-//     });
-//
-//     const Dima = new User({name: 'Dmitrii', age: 22});
-// });
-
 let games = {};
+
+// const names = ['vika', 'dima'];
+
+
+
+const game = new Game({
+    cardsDeck: [],
+    players: [
+        {
+            score: 0,
+            name: 'abc',
+            cards: [],
+            isLose: false,
+            isStand: false
+        },
+        {
+            score: 0,
+            name: 'bbb',
+            cards: [],
+            isLose: false,
+            isStand: false
+        },
+    ],
+    winners: [],
+    idIndex: 0,
+    arrayOfPlayerId: [],
+    acitvePlayerId: null,
+    isEndGame: false,
+    suits: ['♣', '♠', '♥', '♦'],
+    highCards: ['J', 'Q', 'K', 'A']
+});
+
+game.fullId();
+game.setNextPlayerId();
+game.createCardsDeck();
+game.firstHand();
+
+game.save();
 
 // Middlewares
 const authorizationMiddleware = (ctx, next) => {
@@ -51,15 +79,20 @@ const authorizationMiddleware = (ctx, next) => {
     return next();
 }
 
-const checkGame = (ctx, next) => {
-    const session = ctx.state.session
-    if (!games[session.id]) {
+const checkGame = async (ctx, next) => {
+    const session = ctx.state.session;
+    let game = null;
+    try {
+        game = await Game.findById(session.id)
+
+    } catch (e) {
         ctx.status = 401;
+        ctx.body = {error: e};
 
         return;
     }
 
-    ctx.state.game = games[session.id];
+    ctx.state.game = game;
 
     return next();
 }
@@ -69,13 +102,13 @@ const getGameController = (ctx) => {
     ctx.body = ctx.state.game;
 }
 
-const hitAndGetGameController = (ctx) => {
-    ctx.state.game.hit();
+const hitAndGetGameController = async (ctx) => {
+    await ctx.state.game.hit();
     ctx.body = ctx.state.game;
 }
 
-const standAndGetGameController = (ctx) => {
-    ctx.state.game.stand();
+const standAndGetGameController = async (ctx) => {
+    await ctx.state.game.stand();
     ctx.body = ctx.state.game;
 }
 
@@ -84,17 +117,17 @@ const restartAndGetGameController = (ctx) => {
     for (const player of players) {
         player.resetPlayer();
     }
-    const session = ctx.state.session
-    ctx.state.game = new Game(players);
-    games[session.id] = ctx.state.game;
+    ctx.state.game.players = players;
+    ctx.state.game.initGame();
+    ctx.state.game.save();
 
     ctx.body = ctx.state.game;
 }
 
 const loginController = async (ctx) => {
-    const players = ctx.request.body // массив с именами игроков
+    const names = ctx.request.body // массив с именами игроков
     const v = new Validator({
-        names: players
+        names
     }, {
         'names': 'required|array',
         'names.*': 'required|string'
@@ -108,13 +141,39 @@ const loginController = async (ctx) => {
         return;
     }
 
-    const session = {
-        id: uuidv4()
-    };
-    const token = jwt.sign(session, SECRET_KEY);
-    const game = new Game(players.map(name => new Player(uuidv4(), name)));
+    const players = names.reduce((array, name) => {
+        return [...array, {
+            score: 0,
+            name: name,
+            cards: [],
+            isLose: false,
+            isStand: false
+        }]
+    }, []);
 
-    games[session.id] = game;
+    // const game = new Game(players.map(name => new Player(uuidv4(), name)));
+    const game = new Game({
+        cardsDeck: [],
+        players,
+        winners: [],
+        idIndex: 0,
+        arrayOfPlayerId: [],
+        acitvePlayerId: null,
+        isEndGame: false,
+        suits: ['♣', '♠', '♥', '♦'],
+        highCards: ['J', 'Q', 'K', 'A']
+    });
+    game.initGame();
+
+    const session = {
+        id: game.id
+    };
+
+    const token = jwt.sign(session, SECRET_KEY);
+
+    game.save();
+
+    // games[session.id] = game;
 
     ctx.body = {
         game,
