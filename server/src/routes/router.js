@@ -141,7 +141,7 @@ const loginController = async (ctx) => {
 
     const token = jwt.sign(session, SECRET_KEY);
 
-    game.save();
+    await game.save();
 
 
     ctx.body = {
